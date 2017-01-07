@@ -1,5 +1,5 @@
 var Service, Characteristic;
-var request = require("request");
+var request = require("sync-request");
 var pollingtoevent = require('polling-to-event');
 
 	module.exports = function(homebridge){
@@ -144,6 +144,7 @@ var pollingtoevent = require('polling-to-event');
 			this.log("Setting power state to off");
 		}
 		
+		/*
 		this.httpRequest(url, body, this.http_method, this.username, this.password, this.sendimmediately, function(error, response, responseBody) {
 			if (error) {
 			this.log('HTTP set power function failed: %s', error.message);
@@ -153,6 +154,18 @@ var pollingtoevent = require('polling-to-event');
 			callback();
 			}
 		}.bind(this));
+		*/
+
+		var res = request(this.http_method, url);
+
+		if (res.getBody('statusCode') >= 300) {
+			this.log('HTTP set power function failed');
+			callback(new Error("HTTP set power function failed: " + res.getBody('statusCode')));
+		}
+		else {
+			this.log('HTTP set power function succeeded');
+			callback();
+		}
 	} else {
 	 	callback();
 	}
